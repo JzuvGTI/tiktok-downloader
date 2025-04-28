@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Downloader</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      font-family: 'Inter', sans-serif;
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .tiktok-pink { color: #EE1D52; }
+    .tiktok-cyan { color: #69C9D0; }
+    .hover-scale { transition: transform 0.3s ease; }
+    .hover-scale:hover { transform: scale(1.05); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.8s ease-out; }
+    .navbar { 
+      background: rgba(0, 0, 0, 0.8); 
+      backdrop-filter: blur(8px); 
+    }
+    /* Notification Styles */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      min-width: 300px;
+      padding: 16px 24px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    }
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .notification.success {
+      background: rgba(0, 255, 128, 0.15);
+      border: 1px solid rgba(0, 255, 128, 0.3);
+      color: #00ff80;
+    }
+    .notification.error {
+      background: rgba(238, 29, 82, 0.15);
+      border: 1px solid rgba(238, 29, 82, 0.3);
+      color: #EE1D52;
+    }
+    .notification.info {
+      background: rgba(105, 201, 208, 0.15);
+      border: 1px solid rgba(105, 201, 208, 0.3);
+      color: #69C9D0;
+    }
+    .notification i {
+      font-size: 1.5rem;
+    }
+    .notification .close-btn {
+      cursor: pointer;
+      margin-left: auto;
+      font-size: 1.2rem;
+      opacity: 0.7;
+    }
+    .notification .close-btn:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col transition-colors duration-500">
+
+  <!-- Loading Spinner -->
+  <div id="loadingSpinner" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="border-4 border-tiktok-pink border-t-transparent rounded-full w-16 h-16 animate-spin"></div>
+  </div>
+
+  <!-- Notification Container -->
+  <div id="notificationContainer"></div>
+
+  <!-- Navbar -->
+  <header class="navbar sticky top-0 z-20 bg-white/80 backdrop-blur-md shadow-md transition-all duration-500 animate-fade-in">
+    <div class="container mx-auto flex items-center justify-between px-6 py-4">
+      <!-- Logo & Brand -->
+      <a href="#" class="flex items-center space-x-3 group">
+        <i class="fab fa-tiktok text-3xl text-tiktok-pink group-hover:scale-110 transition-transform"></i>
+        <span class="text-2xl font-bold tracking-tight text-gray-800 group-hover:text-tiktok-pink transition-colors">TikTok Downloader</span>
+      </a>
+  
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-8 font-semibold text-gray-600">
+        <a href="#" class="hover:text-tiktok-pink transition-colors duration-300">Home</a>
+        <a href="#features" class="hover:text-tiktok-cyan transition-colors duration-300">Features</a>
+        <a href="#download" class="hover:text-tiktok-pink transition-colors duration-300">Download</a>
+      </nav>
+    </div>
+  </header>
+  
+
+  <!-- Hero Section -->
+  <section class="flex-grow flex flex-col justify-center items-center text-center px-6 py-24 animate-fade-in">
+    <h1 class="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
+      Download TikTok Videos 
+      <span class="tiktok-pink">Without Watermark</span>
+    </h1>
+    <p class="text-gray-400 max-w-lg mb-10 text-lg">
+      Elegant. Swift. Free. Paste your TikTok link and download high-quality videos instantly.
+    </p>
+
+    <div id="download" class="w-full max-w-3xl glass-effect p-6 rounded-2xl shadow-xl flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 transition-all duration-500">
+      <input 
+        type="text" 
+        id="videoLink"
+        placeholder="Paste TikTok Video Link..." 
+        class="flex-1 px-5 py-4 rounded-lg bg-gray-900 bg-opacity-50 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-tiktok-pink text-gray-200 placeholder-gray-500"
+      >
+      <button onclick="downloadNow()" class="bg-tiktok-pink hover:bg-tiktok-pink/80 text-white px-8 py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition hover-scale">
+        <i class="fas fa-download"></i>
+        <span>Download Now</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-24 transition-all duration-500 animate-fade-in">
+    <div class="container mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-12">Why Choose Us?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div class="p-8 rounded-2xl glass-effect hover-scale transition-all duration-300">
+          <i class="fas fa-bolt tiktok-cyan text-5xl mb-6"></i>
+          <h3 class="text-2xl font-semibold mb-3">Lightning Fast</h3>
+          <p class="text-gray-400 text-base">Download videos in seconds with our high-speed servers.</p>
+        </div>
+        <div class="p-8 rounded-2xl glass-effect hover-scale transition-all duration-300">
+          <i class="fas fa-shield-alt tiktok-pink text-5xl mb-6"></i>
+          <h3 class="text-2xl font-semibold mb-3">Safe & Secure</h3>
+          <p class="text-gray-AJ400 text-base">No login required, fully encrypted downloads.</p>
+        </div>
+        <div class="p-8 rounded-2xl glass-effect hover-scale transition-all duration-300">
+          <i class="fas fa-water tiktok-cyan text-5xl mb-6"></i>
+          <h3 class="text-2xl font-semibold mb-3">No Watermark</h3>
+          <p class="text-gray-400 text-base">Enjoy clean, watermark-free TikTok videos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div id="videoModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+    <div class="glass-effect rounded-2xl shadow-2xl max-w-sm w-full p-6 relative animate-fade-in">
+      <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-200 text-2xl">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <!-- Thumbnail -->
+      <div class="w-full aspect-w-1 aspect-h-1 mb-6">
+        <img id="videoThumbnail" class="w-full h-full object-cover rounded-lg" alt="Video Thumbnail">
+      </div>
+  
+      <h2 id="videoTitle" class="text-2xl font-bold mb-3 text-center"></h2>
+      <p id="videoCreatedAt" class="text-sm text-gray-400 mb-6 text-center"></p>
+  
+      <div class="grid grid-cols-3 gap-4 text-sm mb-6">
+        <div class="flex justify-center items-center space-x-2">
+          <i class="fas fa-heart tiktok-pink"></i>
+          <span id="likeCount"></span>
+        </div>
+        <div class="flex justify-center items-center space-x-2">
+          <i class="fas fa-comment tiktok-cyan"></i>
+          <span id="commentCount"></span>
+        </div>
+        <div class="flex justify-center items-center space-x-2">
+          <i class="fas fa-share tiktok-cyan"></i>
+          <span id="shareCount"></span>
+        </div>
+        <div class="flex justify-center items-center space-x-2">
+          <i class="fas fa-play tiktok-cyan"></i>
+          <span id="playCount"></span>
+        </div>
+        <div class="flex justify-center items-center space-x-2">
+          <i class="fas fa-save tiktok-cyan"></i>
+          <span id="saveCount"></span>
+        </div>
+        <div class="flex justify-center items-center space-x-2">
+          <i class="fas fa-clock tiktok-cyan"></i>
+          <span id="videoDuration"></span>
+        </div>
+      </div>
+  
+      <!-- Download Link -->
+      <a id="downloadLink" href="#" target="_blank" class="block text-center bg-tiktok-pink text-white py-3 rounded-lg hover:bg-tiktok-pink/80 transition hover-scale">
+        <i class="fas fa-download mr-2"></i> Download Video
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-black bg-opacity-80 py-8">
+    <div class="container mx-auto px-6 text-center text-gray-400">
+      <p>© 2025 TikTok Downloader. All rights reserved.</p>
+    </div>
+  </footer>
+
+  
+  <script>
+    // Notification System
+    function showNotification(message, type = 'info') {
+      const container = document.getElementById('notificationContainer');
+      const notification = document.createElement('div');
+      
+      // Map notification types to icons
+      const icons = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        info: 'fas fa-info-circle'
+      };
+      
+      notification.className = `notification ${type} flex items-center`;
+      notification.innerHTML = `
+        <i class="${icons[type]}"></i>
+        <span>${message}</span>
+        <i class="fas fa-times close-btn"></i>
+      `;
+      
+      container.appendChild(notification);
+      
+      // Show notification
+      setTimeout(() => notification.classList.add('show'), 100);
+      
+      // Auto-dismiss after 5 seconds
+      const timeout = setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 5000);
+      
+      // Close button functionality
+      notification.querySelector('.close-btn').addEventListener('click', () => {
+        clearTimeout(timeout);
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      });
+    }
+
+    // Example usage (for testing, you can remove these)
+    // showNotification('Video downloaded successfully!', 'success');
+    // showNotification('Invalid TikTok link.', 'error');
+    // showNotification('Paste a valid link to download.', 'info');
+
+  </script>
+  <script>
+    async function downloadNow() {
+      const videoLink = document.getElementById('videoLink').value.trim();
+      if (!videoLink) {
+        showNotification('Please paste a TikTok link!', 'error');
+        return;
+      }
+
+      // Show Loading Spinner
+      document.getElementById('loadingSpinner').classList.remove('hidden');
+
+      // Call API to fetch data
+      const apiUrl = `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(videoLink)}`;
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        // Hide Loading Spinner
+        document.getElementById('loadingSpinner').classList.add('hidden');
+
+        if (data && data.video) {
+          // Populate modal with video data
+          document.getElementById('videoThumbnail').src = data.video.dynamic_cover;
+          document.getElementById('videoTitle').textContent = data.title;
+          document.getElementById('videoCreatedAt').textContent = data.created_at;
+          document.getElementById('likeCount').textContent = data.stats.likeCount;
+          document.getElementById('commentCount').textContent = data.stats.commentCount;
+          document.getElementById('shareCount').textContent = data.stats.shareCount;
+          document.getElementById('playCount').textContent = data.stats.playCount;
+          document.getElementById('saveCount').textContent = data.stats.saveCount;
+          document.getElementById('videoDuration').textContent = data.video.durationFormatted;
+
+          // Update the download link
+          const downloadLink = document.getElementById('downloadLink');
+          downloadLink.href = data.video.noWatermark;
+          downloadLink.setAttribute('download', 'TikTok_video.mp4');
+
+          // Show Modal
+          document.getElementById('videoModal').classList.remove('hidden');
+          document.getElementById('videoModal').classList.add('flex');
+
+          // Trigger download directly when the modal opens
+          downloadLink.click(); // Auto trigger download when modal is displayed
+        } else {
+          showNotification('Video not found or failed to fetch.', 'error');
+        }
+
+
+      } catch (error) {
+        showNotification('Failed to retrieve data.', 'error');
+      }
+    }
+
+    // Close the Modal
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('videoModal').classList.add('hidden');
+    });
+  </script>
+  
+</body>
+</html>
